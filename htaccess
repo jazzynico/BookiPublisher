@@ -1,0 +1,42 @@
+AddType application/epub+zip .epub
+Options FollowSymLinks
+RewriteEngine on
+
+#RewriteBase /
+#RewriteCond %{HTTP_HOST} !^en\.[a-z-]+\.[a-z]{2,6} [NC]
+#RewriteCond %{HTTP_HOST} ([a-z-]+\.[a-z]{2,6})$ [NC]
+#RewriteRule ^(/)$ /index.php [R=301,L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !(\.[a-zA-Z0-9]{1,5}|/)$
+RewriteRule (.*)$ http://en.flossmanuals.net/$1/ [R=301,L]
+
+
+#RewriteRule  ^/$  /bookipublisher/index.php [NC,L]
+
+RewriteRule  http://en.flossmanuals.net(/)$  /index.php [NC,L]
+RewriteRule  http://www.flossmanuals.net(/)$  /index.php [NC,L]
+
+
+
+
+RewriteRule  (.*)index.php(.*) index.php$2 [NC,L]
+RewriteRule  (.*)_booki/(.*) _booki/$2 [NC,L]
+RewriteRule  (.*)/widgets/(.*) widgets/$2  [NC,L]
+RewriteRule  (.*)/_templates/(.*) _templates/$2 [NC,L]
+RewriteRule  ^rss(/)$ /bookipublisher/index.php?plugin=blog&action=rss [NC,L]
+
+RewriteRule  ^puredata/([A-Za-z0-9_-]*)(/)?$ /bookipublisher/index.php?book=pure-data&chapter=$2 [NC,L]
+RewriteRule  ^([A-Za-z0-9-_\.]*)/([A-Za-z0-9_-]*)(/)?$ /bookipublisher/index.php?book=$1&chapter=$2 [NC,L]
+RewriteRule  ^([A-Za-z0-9-_\.]*)/([A-Za-z0-9_-]*)/([A-Za-z0-9_-]*)(/)?$ /bookipublisher/index.php?book=$1&dir=$2&chapter=$3 [NC,L]
+#RewriteRule  ^([A-Za-z0-9-_\.]*)$ /bookipublisher/index.php?book=$1&chapter=$2 [NC,L]
+
+#RewriteRule  ([A-Za-z0-9-_\.]*) /bookipublisher/index.php?book=$1&chapter=index [NC,L]
+
+
+
+#RewriteRule  ^([A-Za-z0-9-_]*)/([A-Za-z0-9_-]*)(.html)/?$ /bookipublisher/index.php?book=$1&chapter=$2 [NC,L]
+#RewriteRule  ^([A-Za-z0-9-_]*)/?$ /bookipublisher/index.php?book=$1&chapter=index [NC,L]
+#RewriteRule  http://en.flossmanuals.net/([A-Za-z0-9-_]*)/?$ /bookipublisher/index.php?book=$1&chapter=index [NC,L]
+

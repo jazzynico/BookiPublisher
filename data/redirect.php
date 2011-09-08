@@ -1,0 +1,2 @@
+<?php
+$mapping = array();

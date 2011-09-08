@@ -1,0 +1,18 @@
+#!/bin/bash
+# for now, you can log in using browser and set the cookie value from it here
+SESSION_COOKIE="PHPSESSID=e7a6632be43584f802e21391177ed95c"
+
+BOOKIPUBLISHER_URL="http://fi-new.flossmanuals.net"
+
+cat importlist | while read -r id title; do 
+    if ! [ -s "log/$id.html" ]; then 
+        echo "$(date -Iseconds) getting $id..."
+
+        tmp="$(mktemp XXXXXX)"
+        rm "$tmp"
+        uri="$BOOKIPUBLISHER_URL/admin.php?plugin=getbook&tmpfilename=update_$tmp"
+        post_data="book=$id&getEpub=on&getPDF=on&title=$title&tmpfilename=update_$tmp" 
+
+        wget -S --no-cookies --header "Cookie: $SESSION_COOKIE" --post-data "$post_data" "$uri" -O "log/$id.html" &>"log/$id.log"
+    fi
+done

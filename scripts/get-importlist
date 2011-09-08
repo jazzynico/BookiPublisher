@@ -1,0 +1,7 @@
+#!/bin/bash
+# for now, you can log in using browser and set the cookie value from it here
+SESSION_COOKIE="PHPSESSID=e7a6632be43584f802e21391177ed95c"
+
+BOOKIPUBLISHER_URL="http://fi-new.flossmanuals.net"
+
+wget --no-cookies --header "Cookie: $SESSION_COOKIE" -O - "$BOOKIPUBLISHER_URL/admin.php?plugin=getbook" | sed -e 's#.*<option value="\([^"]*\)">\([^<]*\)</option>#\1 \2#g ; t ; d' >importlist

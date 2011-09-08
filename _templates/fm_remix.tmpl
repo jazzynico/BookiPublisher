@@ -1,0 +1,971 @@
+<html>
+	<head>
+<title>remix</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<link rel="icon" href="_templates/fm_resources/fl2.ico" type="image/x-icon" /> <link rel="shortcut icon" href="_templates/fm_resources/fl2.ico" type="image/x-icon" />
+		<link rel="StyleSheet" href="_templates/fm_resources/fm.css" type="text/css" media="screen"/>
+<style type="text/css">
+img {
+//	display:block;
+}
+* {margin:0}
+</style>
+<style>
+body
+{
+margin:0;
+padding:0
+}
+h1 {
+color:#ff7f00;
+}
+h2 {
+color:#ff7f00;
+}
+h3 {
+color:#000000;
+}
+</style>
+<p />
+<script type="text/javascript" src="data/javascripts/Mochikit/MochiKit.js"></script>
+<script type="text/javascript" src="data/javascripts/Mochikit/Base.js"></script>
+<script type="text/javascript" src="data/javascripts/Mochikit/DOM.js"></script>
+<script type="text/javascript" src="data/javascripts/Mochikit/New.js"></script>
+<script type="text/javascript" src="data/javascripts/Mochikit/Style.js"></script>
+<script type="text/javascript" src="data/javascripts/Mochikit/Position.js"></script>
+<script type="text/javascript" src="data/javascripts/Mochikit/Color.js"></script>
+<script type="text/javascript" src="data/javascripts/Mochikit/Visual.js"></script>
+<script type="text/javascript" src="data/javascripts/Mochikit/Signal.js"></script>
+<script type="text/javascript" src="data/javascripts/Mochikit/DragAndDrop.js"></script>
+<script type="text/javascript" src="data/javascripts/Mochikit/Sortable.js"></script>
+  <script>
+// <![CDATA[
+var Url = {
+
+	// public method for url encoding
+	encode : function (string) {
+		return escape(this._utf8_encode(string));
+	},
+
+	// publi method for url decoding
+	decode : function (string) {
+		return this._utf8_decode(unescape(string));
+	},
+
+	// private method for UTF-8 encoding
+	_utf8_encode : function (string) {
+		string = string.replace(/\r\n/g,"\n");
+		var utftext = "";
+
+		for (var n = 0; n < string.length; n++) {
+
+			var c = string.charCodeAt(n);
+
+			if (c < 128) {
+				utftext += String.fromCharCode(c);
+			}
+			else if((c > 127) && (c < 2048)) {
+				utftext += String.fromCharCode((c >> 6) | 192);
+				utftext += String.fromCharCode((c & 63) | 128);
+			}
+			else {
+				utftext += String.fromCharCode((c >> 12) | 224);
+				utftext += String.fromCharCode(((c >> 6) & 63) | 128);
+				utftext += String.fromCharCode((c & 63) | 128);
+			}
+
+		}
+
+		return utftext;
+	},
+
+	// private method for UTF-8 decoding
+	_utf8_decode : function (utftext) {
+		var string = "";
+		var i = 0;
+		var c = c1 = c2 = 0;
+
+		while ( i < utftext.length ) {
+
+			c = utftext.charCodeAt(i);
+
+			if (c < 128) {
+				string += String.fromCharCode(c);
+				i++;
+			}
+			else if((c > 191) && (c < 224)) {
+				c2 = utftext.charCodeAt(i+1);
+				string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+				i += 2;
+			}
+			else {
+				c2 = utftext.charCodeAt(i+1);
+				c3 = utftext.charCodeAt(i+2);
+				string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+				i += 3;
+			}
+		}
+		return string;
+	}
+};
+
+    if(typeof(PdfArrange) == 'undefined') {
+      PdfArrange = {}
+    }
+
+  // PdfArrange.Base
+
+    if(typeof(PdfArrange.Base) == 'undefined') {
+     PdfArrange.Base = {}
+    }
+
+    PdfArrange.Base.web_list      = new Array();
+    PdfArrange.Base.web_topics    = new Array();
+
+    PdfArrange.Base.selected_items    = new Array();
+
+    PdfArrange.Base.edited_topics   = new Array();
+    PdfArrange.Base.possible_topics = new Array();
+
+    PdfArrange.Base.edited_topics_n = 0;
+
+
+    MochiKit.Base.update(PdfArrange.Base, {
+       getTopic: function(webName, topicName) {
+           webName = Url.decode(webName);
+           if(!PdfArrange.Base.web_topics[webName]) { alert(webName); return null; }
+           for(var i = 0; i < PdfArrange.Base.web_topics[webName].length; i++) {
+	       var elem = PdfArrange.Base.web_topics[webName][i];
+               if(elem[1] == topicName)
+	         return elem;
+	   }
+
+	   return null;
+       },
+
+      getTopicWithID: function(eid) {
+        for(var webName in PdfArrange.Base.web_topics) {
+             for(var i = 0; i < PdfArrange.Base.web_topics[webName].length; i++) {
+                if("thelist1_"+PdfArrange.Base.web_topics[webName][i][0] == eid)
+	             return PdfArrange.Base.web_topics[webName][i];
+                }
+           }
+           return null;
+       },
+
+       getWebForId: function(eid) {
+         for(var webName in PdfArrange.Base.web_topics) {
+            for(var i = 0; i < PdfArrange.Base.web_topics[webName].length; i++) {
+                if("thelist1_"+PdfArrange.Base.web_topics[webName][i][0] == eid)
+                    return webName;
+            }
+         }
+         return null;
+       },
+
+       doExport: function() {
+        var s = MochiKit.Sortable.Sortable.serialize('thelist2');
+        var element = s.split("&");
+        var eid_elements = new Array();
+
+        var s = "";
+
+        for(var i = 0; i < element.length; i++) {
+            var idx = element[i].lastIndexOf("=");
+            var eid = element[i].substr(idx+1);
+//            eid_elements.push(eid);
+            s = s + eid + ",";
+        }
+
+
+        return s;
+
+        postform.pagesn.value = s;
+        postform.submit();
+     },
+
+      hasTopic: function(webName, topicName) {
+
+       for(var i = 0; i<PdfArrange.Base.selected_items.length; i++) {
+           if(PdfArrange.Base.selected_items[i] == webName+"__"+topicName)
+             return true;
+       }
+
+       return false;
+      }
+    });
+
+    // PdfArrange.Editor
+
+    if(typeof(PdfArrange.Editor) == 'undefined') {
+     PdfArrange.Editor = {}
+    }
+
+    PdfArrange.Editor.selected_item = null;
+
+
+    MochiKit.Base.update(PdfArrange.Editor, {
+      closeEditor: function(myform, eid) {
+          var elem = PdfArrange.Base.getTopicWithID(eid);
+          var text = myform.elements[0].value;
+
+          elem[2] = text;
+          replaceChildNodes($(eid), PdfArrange.Editor.makeLink(eid, PdfArrange.Base.getWebForId(eid), elem[1], elem[2]));
+
+          PdfArrange.Editor.selected_item = null;
+      },
+
+      cancelEditor: function(eid) {
+          var elem = PdfArrange.Base.getTopicWithID(eid);
+          replaceChildNodes($(eid), PdfArrange.Editor.makeLink(eid, PdfArrange.Base.getWebForId(eid), elem[1], elem[2]));
+
+          PdfArrange.Editor.selected_item = null;
+      },
+
+      undoEditor: function(eid) {
+          var form = $("embededitor");
+          var elem = PdfArrange.Base.getTopicWithID(eid);
+
+          form.title.value = elem[4];
+      },
+
+
+      makeEditor: function(eid) {
+        /* TEMP COMMENT
+          if(PdfArrange.Editor.selected_item != null)  {
+              PdfArrange.Editor.closeEditor($("embededitor"), PdfArrange.Editor.selected_item);
+          }
+        */
+//          if(!PdfArrange.Editor.selected_item) {
+          if(1) {
+
+              var elem  = PdfArrange.Base.getTopicWithID(eid);
+              var value = elem[2];
+
+              var myform = FORM({"style": "margin: 0px",
+                                 "id": "embededitor",
+                                 "method": "GET",
+                                 "action": "javascript:void(0)",
+                                 "onsubmit": "PdfArrange.Editor.closeEditor(this, '"+eid+"')"},
+                                 INPUT({"name": "title", "type": "text", "value": value}),
+                                 //   A({"href":"javascript:void(0)", "onclick": "PdfArrange.Editor.undoEditor('"+eid+"')"}, "undo"),
+                                 //   " | ",
+                                    A({"href":"javascript:void(0)", "onclick": "PdfArrange.Editor.cancelEditor('"+eid+"')"}, "cancel"));
+
+              replaceChildNodes($(eid+"_description"), myform);
+
+              myform.title.focus();
+              myform.title.select();
+
+              PdfArrange.Editor.selected_item = eid;
+          }
+      },
+
+      makeLink: function(eid, webName, name, description) {
+          return DIV(null, DIV({"style": "font-size: 10px"}, SPAN({"style": "float: right"}, A({"href":"javascript:void(0)", "onclick": "PdfArrange.Editor.makeEditor('"+eid+"');"}, "edit title")), webName), DIV({"id": eid+"_description", "style": "font-size: 14px"},  A({"target": "_new", "href": "/bin/view/"+webName+"/"+name+"?skin=basic"}, description)));
+      },
+
+      makeElement: function(eid, webName, name, description) {
+          return LI({"id": eid}, PdfArrange.Editor.makeLink(eid, webName, name, description));
+      },
+
+      makeTitle: function(eid, webName, name, description) {
+          return LI({"id": eid, "style": "background-color: #ff7f00", "class": "title"}, description);
+      },
+
+      makeHeader: function(eid, webName, name, description) {
+          return LI({"id": eid, "style": "background-color: green", "class": "header"}, description);
+      }
+
+    });
+
+    function init() {
+       var n = 1;
+       var thelist2   = $("thelist2");
+       var eid        = "";
+
+
+<remix/>
+
+       MochiKit.Sortable.Sortable.create('thelist1',{containment:['thelist1','thelist2'], dropOnEmpty:true, constraint: false});
+       MochiKit.Sortable.Sortable.create('thelist2',{containment:['thelist1','thelist2'], dropOnEmpty:true, constraint: false});
+    }
+
+function test2() {
+  var l = $("emptyitem");
+
+  if(l.style.display == "block") {
+    if($("thelist2").childNodes.length == 2)
+        l.style.display = "none";
+  } else {
+    if($("thelist2").childNodes.length == 1)
+        l.style.display = "block";
+  }
+}
+
+function test() {
+  alert("test");
+}
+
+function select_web(sel) {
+  var webName = sel.options[sel.selectedIndex].value;
+
+  checkSelected();
+
+  // destroy sortable list
+  MochiKit.Sortable.Sortable.destroy('thelist1');
+  MochiKit.Sortable.Sortable.destroy('thelist2');
+
+  var l   = $("thelist1");
+
+  replaceChildNodes(l);
+
+  // go trough the list
+  MochiKit.Base.map(function (elem) {
+      var eid = "thelist1_"+elem[0];
+
+      if(!PdfArrange.Base.hasTopic(webName, elem[1])) {
+        if(elem[3] == "1") {
+            l.appendChild(PdfArrange.Editor.makeElement(eid, webName, elem[1], elem[2]));
+	} else if(elem[3] == "2") {
+	    l.appendChild(PdfArrange.Editor.makeTitle(eid, webName, elem[1], elem[2]));
+        } else {
+            l.appendChild(PdfArrange.Editor.makeTitle(eid, webName, elem[1], elem[2]));
+	}
+      }
+  }, PdfArrange.Base.web_topics[webName]);
+
+  MochiKit.Sortable.Sortable.create('thelist1',{containment:['thelist1','thelist2'], dropOnEmpty:true, constraint: false});
+  MochiKit.Sortable.Sortable.create('thelist2',{containment:['thelist1','thelist2'], dropOnEmpty:true, constraint: false,  onUpdate: test2});
+
+}
+
+    function checkSelected() {
+        var s = MochiKit.Sortable.Sortable.serialize('thelist2');
+        var element = s.split("&");
+        PdfArrange.Base.selected_items = new Array();
+
+        for(var i = 0; i < element.length; i++) {
+            var idx = element[i].lastIndexOf("=");
+            var eid = element[i].substr(idx+1);
+            PdfArrange.Base.selected_items.push(eid);
+        }
+     }
+
+  function setTab(tabNumber) {
+    $("block1").style.display="none";
+    $("block2").style.display="none";
+    $("block3").style.display="none";
+    $("block4").style.display="none";
+
+
+    $("block"+tabNumber).style.display="block";
+
+    $("step1").style.backgroundColor="#ff7f00";
+    $("step2").style.backgroundColor="#ff7f00";
+    $("step3").style.backgroundColor="#ff7f00";
+    $("step4").style.backgroundColor="#ff7f00";
+
+    $("step"+tabNumber).style.backgroundColor="white";
+
+
+    if(tabNumber == 2) {
+        var pages = PdfArrange.Base.doExport().split(",");
+        var form = $("formexpo");
+        var s = "";
+
+        var reg = new RegExp("(.+)__(.+)", "i");
+	var elems = [];
+
+        for(var i = 0; i < pages.length; i++) {
+            if(pages[i] != "") {
+                if(pages[i].match(reg)) {
+                    var el = PdfArrange.Base.getTopic(RegExp.$1, RegExp.$2);
+                    if(el) {
+		        if(el[3] == 1) {
+		            elems.push(LI(null, A({"href": "javascript:void(0)"}, el[2])));
+			} else {
+                            elems.push(LI({"class": "heading"}, el[2]));
+			}
+                    }
+	        }
+	    }
+	}
+
+        if(window.frames["preview"]) {
+	   // BUG TO FIX
+           // withWindow(window.frames["preview"], function () { var doc = currentDocument();if(doc) { var elem = MochiKit.DOM.getFirstElementByTagAndClassName("div", "topics", parent=doc);  replaceChildNodes(elem, UL(null, elems));} });
+	}
+
+
+        updatePreview();
+	changedExportType();
+    }
+
+
+    if(tabNumber == 4) {
+        var pages = PdfArrange.Base.doExport().split(",");
+        var form = $("formexpo");
+        var form2 = $("exportform");
+
+        var s = "";
+
+        var reg = new RegExp("(.+)__(.+)", "i");
+
+        for(var i = 0; i < pages.length; i++) {
+           if(pages[i] != "") {
+	     if(s != "") s += ", ";
+             if(pages[i].match(reg)) {
+	        var el = PdfArrange.Base.getTopic(RegExp.$1, RegExp.$2);
+		if(el) {
+                  s += '["'+Url.decode(RegExp.$1)+'", "'+RegExp.$2+'", "'+el[2]+'", '+el[3]+']';
+		}
+	     }
+	   }
+	}
+
+        form.ajax.value = '<div id="flossembed" style="border:1px solid #ff7f00;width:834px"/>';
+	form.ajax.value += "\n";
+        form.ajax.value += "<scr"+"ipt>\n";
+	form.ajax.value += "var FLOSSConfig = {'style': {}, 'config': {}, 'pages': ["+s+"], 'title': '"+encodeURI(form2.pdftitle.value)+"'};\n";
+        form.ajax.value += "</scri"+"pt>\n";
+        form.ajax.value += '<script type="text/javascript" src="_templates/jquery/js/jquery-1.6.1.min.js">'+"\n";
+        form.ajax.value += "</scri"+"pt>\n";
+
+	form.ajax.value += '<script type="text/javascript" src="data/remix/embed.js">\n';
+        form.ajax.value += "</scri"+"pt>\n";
+	form.ajax.value += "</div>\n";
+
+    }
+  }
+
+       function checkArchive() {
+           if($("comment").style.display == "none")
+	       $("comment").style.display="block";
+	   else $("comment").style.display="none";
+       }
+
+   function changedExportType() {
+       var exportas = $("exportform").exportas;
+       var export_type = exportas.options[exportas.selectedIndex].value;
+
+       if(export_type == "pdf") {
+         $("optionpdf").style.display ="block";
+         $("optionhtml").style.display = "none";
+         // $("optionsubmit").value = "Export manual";
+       } else {
+         $("optionpdf").style.display ="none";
+         $("optionhtml").style.display = "block";
+         // $("optionsubmit").value = "Next";
+       }
+   }
+
+  var preview_window = null;
+
+  function updatePreview() {
+   var my_css = $("mycss").value;
+   if(window.frames["preview"] && my_css) {
+     if(navigator.userAgent.indexOf("MSIE") != -1) {
+      var el = window.frames["preview"].document;
+      if(el.styleSheets[0])
+        el.styleSheets[0].cssText = my_css;
+    } else
+       withWindow(window.frames["preview"], function () { var doc = currentDocument(); if(doc) {var elem = MochiKit.DOM.getFirstElementByTagAndClassName("style", "mystyle", parent=doc);  replaceChildNodes(elem, my_css); }});
+       }
+  }
+
+
+  function doExportManual() {
+    var pages = PdfArrange.Base.doExport();
+
+    var form = $("formexpo");
+    var form2 = $("exportform");
+
+    form.exportas.value  = form2.exportas.options[form2.exportas.selectedIndex].value;
+    //form.cover.value     = form2.cover.options[form2.cover.selectedIndex].value;
+    //form.template.value  = form2.template.value;
+ // ACO COMMENTED THIS
+    if(form2.archive)
+      form.archive.value   = form2.archive.value;
+    if(form2.comment)
+      form.comment.value   = form2.comment.value;
+    if(form2.pdftitle)
+      form.pdftitle.value  = form2.pdftitle.value;
+    if(form.css)
+     form.css.value       = form2.mycss.value;
+//hmmm
+ form.pdfcss.value       = form2.pdfcss.value;
+
+    form.pagesn.value    = pages;
+
+//    form.step.value      = 3;
+
+    // Add all extra info
+     var pageList = pages.split(",");
+     var reg = new RegExp("(.+)__(.+)", "i");
+
+     replaceChildNodes($("formexpocontainer"));
+
+     appendChildNodes($("formexpocontainer"), INPUT({"type": "hidden", name: "extra_n", value: pageList.length}));
+
+     var n = 0;
+     for(var i = 0; i < pageList.length; i++) {
+         if(pageList[i] != "") {
+             if(pageList[i].match(reg)) {
+                 var el = PdfArrange.Base.getTopic(RegExp.$1, RegExp.$2);
+                 if(el) {
+                   appendChildNodes($("formexpocontainer"), INPUT({"type": "hidden", name: "extra_desc_"+n, value: el[2]}));
+                   appendChildNodes($("formexpocontainer"), INPUT({"type": "hidden", name: "extra_type_"+n, value: el[3]}));
+		   n += 1;
+                 }
+             }
+      }
+    }
+
+    return true;
+  }
+
+// ]]>
+ </script>
+
+  <style type="text/css" media="screen">
+    A {
+       text-decoration: None;
+    }
+
+    ul {
+       border: 1px solid black;
+       list-style-type: none;
+       padding-left: 0px;
+    }
+
+    li {
+      border: 1px solid black;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+
+    .heder { color: red; background-color: #ff7f00}
+
+    .topic { color: black; }
+
+    .title { color: black; background-color: #f0f0f0}
+
+  </style>
+
+	</head>
+<body  onload="init()" background="_templates/fm_resources/background.gif" style="margin:0;color:#000000;text-decoration:none;">
+
+
+<!-- Header graphic is common to all pages  -->
+<div id="header"><img id="header_image" alt="FlossManuals menu" src="_templates/fm_resources/header_menu.gif" height="95" width="465" border="0"></div>
+
+
+<!-- Navigation buttons are language and context specific  -->
+<div id="navigation">
+<a title="Read" href="http://en.flossmanuals.net/index.php"><img src="_templates/fm_resources/read_en.png" width="65" height="30" border="0" alt="Read"></a>
+<a title="Write" href="http://booki.flossmanuals.net/"><img src="_templates/fm_resources/write_en.png" width="65" height="30" border="0" alt="Write"></a>
+<a title="Remix" href="http://en.flossmanuals.net/index.php?plugin=remix"><img src="_templates/fm_resources/remix_active_en.png" width="65" height="30" border="0" alt="Remix"></a>
+<a title="About" href="http://en.flossmanuals.net/index.php?plugin=blog"><img src="_templates/fm_resources/about_en.png" width="65" height="30" border="0" alt="About"></a>
+</div>
+
+<!-- Language buttons are common to all pages  -->
+<div id="languages">
+<a title="English" href="http://en.flossmanuals.net/"><img src="_templates/fm_resources/english_button.png" width="65" height="30" border="0" alt="English"></a>
+<!-- <a title="Español" href="http://es.flossmanuals.net/"><img src="_templates/fm_resources/spanish_button.png" width="65" height="30" border="0" alt="Español"></a> -->
+<a title="فارسی" href="http://fa.flossmanuals.net/"><img src="_templates/fm_resources/farsi_button.png" width="65" height="30" border="0" alt="فارسی"></a>
+<a title="Suomi" href="http://fi.flossmanuals.net/"><img src="_templates/fm_resources/finnish_button.png" width="65" height="30" border="0" alt="Suomi"></a>
+<br>
+<a title="Français" href="http://fr.flossmanuals.net/"><img src="_templates/fm_resources/french_button.png" width="65" height="30" border="0" alt="Français"></a>
+<a title="Nederlands" href="http://nl.flossmanuals.net/"><img src="_templates/fm_resources/dutch_button.png" width="65" height="30" border="0" alt="Nederlands"></a>
+<!-- <a title="Pусский" href="http://ru.flossmanuals.net/"><img src="_templates/fm_resources/russian_button.png" width="65" height="30" border="0" alt="Pусский"></a> -->
+<a title="Translate" href="http://translate.flossmanuals.net/"><img src="_templates/fm_resources/translate_button.png" width="65" height="30" border="0" alt="Translate"></a>
+</div>
+
+<div style="position: absolute; left: 20px; top: 140px;">
+ <img src="_templates/fm_resources/free.gif" border="0"><br> <img src="_templates/fm_resources/WHATDOIWANT2.gif" border="0">
+</div>
+
+
+		<div style="position:absolute;left:270px;top:130px;">
+		<table  cellpadding="0" cellspacing="0" summary="" style="table-layout:fixed;width:730;border: 5px solid #666666;padding-right: 0px;padding-left: 0px;padding-bottom: 0px;padding-top: 0px;margin-left : 10px;margin-top:10;background:#FFF7F0;">
+			<tr>
+			<td width=100%>
+			<div class="ds-contentcontainer">
+			<div style="margin-left:1.2em;">
+			<br>
+ <img src="_templates/fm_resources/text_remix.gif">
+			<br>
+			<br>
+			<p>
+			<br>
+<p />
+<!-- HEAD -->
+<div id="step1" style="border:1px solid #ff7f00;float: left;padding-left: 20px; padding-right: 20px; background-color: white; margin-right: 20px;color:black;">
+<a href="javascript:void(0)" onclick="setTab(1)"><b><font color=black>STEP 1. REMIX<?font></b></a>
+</div>
+
+<div id="step2" style="border:1px solid #ff7f00;float: left; padding-left: 20px; padding-right: 20px; background-color: #ff7f00; margin-right: 20px;">
+<a href="javascript:void(0)" onclick="setTab(2)"><b><font color=black>STEP 2. STYLE</font></b></a>
+</div>
+
+<div id="step3" style="border:1px solid #ff7f00;float: left; padding-left: 20px; padding-right: 20px; background-color: #ff7f00;margin-right: 20px;">
+<a href="javascript:void(0)" onclick="setTab(3)"><b><font color=black>STEP 3. EXPORT</font></b></a>
+</div>
+
+<div id="step4" style="border:1px solid #ff7f00;float: left; padding-left: 20px; padding-right: 20px; background-color: #ff7f00;">
+<a href="javascript:void(0)" onclick="setTab(4)"><b><font color=black>EMBED (optional)</font></b></a>
+</div>
+
+<div style="margin-bottom: 20px; clear: both"/>
+<!-- /HEAD -->
+
+<!-- start of table -->
+<div id="block1">
+<table border="0" style="border: 0px;">
+
+ <tr>
+  <td colspan="3">
+    <form id="formone" name="formone">
+     <br>
+
+     <b>Make a manual remix</b><br/>
+     1. Select a manual from the drop down box
+     <br>2. Drag chapters and sections to the remix box
+	<br>3. Add more chapters from other manuals
+     <br><br><select onchange="select_web(this)">
+	<option value="null" SELECTED>A Choose manual...</option>
+<remix-menu/>
+</select>
+    </form>
+  </td>
+ </tr>
+ <tr>
+  <td valign="top">
+   <div style="width: 300px">
+    <ul id="thelist1">
+    </ul>
+   </div>
+  </td>
+
+  <td align="center" valign="center" width="100">
+  <!--  <form name="postform" id="postform" method="POST" action=""> -->
+    <form name="postform" id="postform" method="POST" action="javascript:void(0)" onsubmit="return false">
+      <input type="hidden" name="step" value="1"/>
+      <input type="hidden" name="pagesn" value=""/>
+    </form>
+<!-- adam hack
+    <form method="GET" action="javascript:void(0)" onsubmit="javascript: return false">
+      <input type="button" name="left" value="export" onclick="PdfArrange.Base.doExport(); return false;">
+    </form>
+-->
+  </td>
+  <td valign="top">
+   <div style="width: 300px;height:80px">
+     <ul id="thelist2">
+      <li id="emptyitem" style="display: block"> <b>remix box</b> (drag chapters here) </li>
+     </ul>
+   </div>
+     <!--
+    <form method="GET" action="javascript:void(0)" onsubmit="javascript: return false">
+      <input type="button" name="left" value="export" onclick="PdfArrange.Base.doExport(); return false;">
+    </form>
+    -->
+  </td>
+ </tr>
+</table>
+</div>
+
+<div id="block2" style="position: relative; display: none">
+  <form id="exportform" name="exportform" method="POST" action="javascript:void(0)">
+    <!--  <input type="hidden" name="pagesn" value="'.CGI=HASH(0x814faf4)->param("pagesn").'"/> -->
+      <input type="hidden" name="step" value="2"/>
+         <br/>
+	 <b>Format and style</b><br>
+	 1. Choose the Export format for the remix<br>
+	 2. Enter a title for the remix
+	 <br>3. Change the CSS as desired<br><br>
+         Title:<br/><input type="text" name="pdftitle" size="50"/> <br/>
+         Export as:<br/>
+         <select name="exportas" onchange="changedExportType()" >
+           <option value="pdf">PDF</option>
+           <option value="htmlzip">HTML zip</option>
+           <option value="htmltgz">HTML tar.gz</option>
+         </select>
+
+     <div id="optionpdf">
+<br>Your CSS for PDF:
+<br><textarea name="pdfcss" id="pdfcss" rows="10" cols="50">
+body {
+  font-family: 'Gillius ADF';
+  background: #fff;
+  color: #000;
+  width: 100%;
+  overflow: hidden;
+}
+
+h1 {
+   text-transform: uppercase;
+   page-break-before: always;
+   background: white;
+   text-transform: uppercase;
+}
+
+table {
+  float: none;
+}
+
+p, li {
+  page-break-inside: avoid;
+}
+
+pre, code, tt {
+  font-family: "Courier", "Courier New", monospace;
+  font-size: 0.8em;
+  page-break-inside: avoid;
+}
+
+pre {
+  max-width:700px;
+  overflow: hidden;
+}
+
+img {
+  max-width: 700px;
+  height: auto;
+}
+
+</textarea>
+         <!-- Select cover page: <br/><select name="cover">
+<option value="AlchemyCover" >AlchemyCover</option><option value="Campcaster" >Campcaster</option><option value="Campsite" >Campsite</option><option value="CampsiteCookbook" >CampsiteCookbook</option><option value="Default" selected>Default</option><option value="FlossManuals" >FlossManuals</option><option value="InkscapeCover" >InkscapeCover</option></select>
+--></div><div id="optionhtml" style="display: none"><!-- Select template:<br/><select name="template"><option value="default">default</option></select>--><br clear="all"/>Your CSS for HTML:<br/><textarea name="mycss" id="mycss" rows="10" cols="50">body {
+	font-family : trebuchet,verdana, sans-serif;
+	font-size: 12px;
+	line-height:17px;
+}
+#content {
+	padding:10px;
+	position:absolute;
+	top:20px;
+	left:200px;
+	width:670px;
+	border-width:4px;
+	border-style:solid;
+	border-color:#666666;
+}
+#index {
+	 color:  #ff7f00;
+	 font-family: trebuchet,sans-serif;
+	 font-size: 10px;
+	 line-height:11px;
+	 position:absolute;
+	 top:20px;
+	 left :10px;
+}
+
+#index UL {
+	 width: 155px;
+	 list-style-type: None;
+	 padding-left: 0px;
+	 border: 14px solid #ff7f00;
+	 background-color: #ff7f00;
+	 margin: 0px 0px 0px 0px;
+  }
+
+#index  LI {
+	 padding-left: 0px;
+	 padding-right: 10px;
+	 padding-top: 4px;
+	 padding-bottom: 4px;
+	 color: #ffffff;
+	 margin: 0px 0px 0px 0px;
+	 background-color: #ff7f00;
+	 border-top: 1px solid #ff7f00;
+  }
+
+#index LI:hover {
+  background-color: #F99B1C;
+}
+
+#index  LI.heading {
+	 background-color: #ff7f00;
+	 color: #000000;
+	 border-top:1px solid #FFE5CC;
+	 padding-top: 7px;
+	 font-weight: bold;
+}
+
+#index  LI.title {
+	 border-bottom: 2px solid #FFE5CC;
+	 background-color: #ff7f00;
+	 color: #FBF4E9;
+	 font-weight: bolder;
+	 font-size:20px;
+	 padding-bottom: 20px;
+  }
+
+#index A {
+	 text-decoration: none;
+	 color:  #FBF4E9;
+	 font-weight: bold;
+}
+
+hr {
+border : none;
+background-color : #666666;
+color : #000000;
+height : 2px;
+width:120px;
+margin-left:0px;
+margin-bottom: 10px;
+margin-top: 10px;
+}
+
+blockquote {
+}
+
+ul, li {
+margin-bottom: 5px;
+margin-top: 0px;
+}
+
+h1 {
+font-size: 24px;
+font-family : Arial,verdana, sans-serif;
+font-weight : Bold;
+margin-bottom: 10px;
+margin-top: 0px;
+line-height: 32px;
+letter-spacing: -1px;
+}
+
+h2 {
+font-size: 18px;
+font-family : Arial,verdana, sans-serif;
+font-weight : Bold;
+margin-bottom: 10px;
+margin-top: 15px;
+padding-top : 15px;
+}
+
+h3 {
+font-size: 14px;
+font-family : Arial,verdana, sans-serif;
+font-weight : Bold;
+margin-bottom: 5px;
+}
+
+h4 {
+font-size: 1em;
+font-family : Arial,verdana, sans-serif;
+font-weight : Bold;
+margin-bottom: -12px;
+}
+pre, span.Code, span.verbatim {
+font-size:12px;
+line-height:1.5em;
+background-color:#FFE5CC;
+border: 0px solid #000000;
+margin-left : 0.5em;
+margin-bottom : 20px;
+margin-right : 1em;
+padding-left: 1em;
+padding-right: 1em;
+padding-top: 0.2em;
+padding-bottom: 0.2em;
+color : black;
+white-space: pre-wrap;       /* css-3 */
+white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+white-space: -pre-wrap;      /* Opera 4-6 */
+white-space: -o-pre-wrap;    /* Opera 7 */
+word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+
+</textarea><br/><input type="button" onclick="javascript:updatePreview()" value="Update preview"/>
+<iframe name="preview" id="preview" style="margin-top: 10px; width: 680px; height: 400px;" src="data/remix/test.html">TO JE TO</iframe></div><br/>        <input type="hidden" name="pdfheadertopic" value="TWiki.GenPDFExampleHeaderFooterTopic"/>
+	<!--<input type="submit" id="optionsubmit" value="Export manual"/>-->
+    </form>
+</div>
+
+
+<div id="block3" style="position: relative; display: none">
+  <br/>
+  <form id="formexpo" name="formexpo" method="POST" action="">
+    <b>Export the manual</b><br>1. Export the manual
+<br>2. Go back to step 1 and 2 and make changes if necessary<br>
+    <br><button onclick="doExportManual()">Export manual</button>
+  <br/><br/>
+    <input type="hidden" name="step" value="3"/>
+    <input type="hidden" name="pagesn" value=""/>
+    <input type="hidden" name="cover" value=""/>
+    <input type="hidden" name="exportas" value=""/>
+    <input type="hidden" name="template" value=""/>
+    <input type="hidden" name="archive" value=""/>
+    <input type="hidden" name="comment" value=""/>
+    <input type="hidden" name="css" value=""/>
+    <input type="hidden" name="pdfcss" value=""/>
+    <input type="hidden" name="pdftitle" value=""/>
+    <span id="formexpocontainer"></span>
+  <br/><br/>
+  <br/><br/>
+  <br/><br/>
+</div>
+<div id="block4" style="position: relative; display: none">
+<br><br><b>AJAX MANUAL</b><br>
+This live manual functionality will allow you to keep a manual on your blog / web page which is maintained by the community of authors at FLOSS Manuals.
+<br><br>
+1. Copy+paste this text if you want to embed it<br/>
+2. This manual can be customised (see below). <br><br>
+    <textarea name="ajax" rows="15" cols="80">
+    </textarea>
+    <br/><br/>
+  </form>
+    <b>note :</b> Below is the defaults for the style of the text and layout<br>
+<br><br><pre>
+var _config = { "width":           "835px",
+                "height":          "500px",
+                "padding":         "3px",
+                "color":           "#ffe5cc",
+                "indexwidth":      "160px",
+                "indexbackground": "#ff7f00",
+                "framewidth":      "670px",
+                "frameheight":     "500px",
+                "skin":            "ajax"};
+
+var _style = { "title":   "color: #ffe5cc;font-size: 20;font-family: Arial,verdana,
+				sans-serif;font-weight: bold;margin-left:20px",
+               "frame":   "",
+               "index":   "",
+               "embed":   "font-size: 10px;font-family: Arial,verdana, sans-serif;
+	       			font-weight: bold; line-height:14px",
+               "topic":   "font-weight: bold",
+               "heading": "font-weight: bold; color:black;font-family: Arial,verdana,
+	       			sans-serif;font-size: 10px;padding-top: 4px;
+				padding-bottom: 4px",
+               "list":    "list-style-type: none; padding-left: 20px; margin-left:
+	       			0px;margin-top:2px;",
+               "link":    "color: #ffe5cc; text-decoration: none; font-weight: bold"};
+</pre>
+Use the following to override the defaults an external style sheet.
+<br><br><pre>
+FLOSSConfig.style = null
+</pre>
+An example customisation syntax :
+<br><br><pre>
+var FLOSSConfig = {'style': {'title': 'color: black; font-size: 20;font-family:
+Arial,verdana, sans-serif;font-weight: bold', 'heading': 'font-weight: bold;
+color:black;font-family: Arial,verdana, sans-serif;font-size: 12','embed':
+'font-size: 12px;font-family: Arial,verdana, sans-serif;font-weight: bold'},
+'config': {'width': '870px', 'height': '500px', 'framewidth': '670px'},
+'pages': [], 'title': ''};
+</pre>
+</div></div>
+
+			</div>
+			</div>
+			</td>
+			</tr>
+		</table>
+		</div>
+	</body>
+</html>
