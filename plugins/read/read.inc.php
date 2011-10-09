@@ -58,10 +58,16 @@ function ratedOutput ($info2,$tablerows){
 
   $info2=$sorter->sort($info2,'bookrating');
 
-  $html="<table width=650><tr><td valign=top>";
+  $html="<table width='650px'><tr>";
   $tablecounter=0;
   foreach ((array)$categoryRating as $key => $val) {
     $category=$key;
+    if ($tablecounter==$tablerows+1) {
+      $html.="<tr><td valign='top'>";
+    }
+    else{
+      $html.="<td valign='top'>";
+    }
     $html.="<h2 style='text-indent:-5px;'>".strtoupper($category)."</h2>";
     foreach ($info2 as $info3){
       $status="";
@@ -73,11 +79,11 @@ function ratedOutput ($info2,$tablerows){
       }
     }
     if ($tablecounter==$tablerows) {
-      $html.="</td></tr><tr><td valign=top>";
+      $html.="</td></tr>";
       $tablecounter=0;
     }
     else{
-      $html.="</td><td valign=top>";
+      $html.="</td>";
       $tablecounter++;
     }
   }
