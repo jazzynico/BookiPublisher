@@ -151,7 +151,7 @@ $section=$_GET['dir'];
     $content=@file_get_contents($filename);
 
     if ($content == "") {
-      $content =  "<br>This page does not exist. Book request=$book Chapter request=$chapter";
+      $content =  "<br />This page does not exist. Book request=$book Chapter request=$chapter";
       $content = addTemplate('error', $content);
     } else {
       //$content = preg_replace("[href=\"([\w!\/]*).html\"]", "href=\"\\1\"", $content);

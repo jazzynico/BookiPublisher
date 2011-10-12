@@ -75,7 +75,7 @@ function remix_index() {
   	$thisBook = tempnam("tmp/", "makebook_");
 	$thisBookHTML="tmp/".basename($thisBook).".html";
 	$thisBookPDF="tmp/".basename($thisBook).".pdf";
-	file_put_contents($thisBookHTML,$book);
+	file_put_contents($thisBookHTML,utf8_decode($book));
 	$makecmd =$thisBookHTML."  ".$thisBookPDF;
 	exec("lib/wkhtmltopdf-i386 -t $makecmd --cover data/remix/pdf_cover/cover.html", $results);
 	//return the file
@@ -177,7 +177,7 @@ function remix_index() {
 	$toctext.="PdfArrange.Base.web_list.push(\"$dirname\");\n";
 	$toctext.="PdfArrange.Base.web_topics[\"$dirname\"] = new Array();\n";
 	$toctext.="PdfArrange.Base.web_topics[\"$dirname\"].";
-	$toctext.="push(new Array(\"".$dirname."__TITLE$sectioncounter\", \"TITLE$sectioncounter\", \"$dirname\", \"2\"));\n";
+	$toctext.="push(new Array(\"".$dirname."__TITLE$sectioncounter\", \"TITLE$sectioncounter\", \"".utf8_decode($dirname)."\", \"2\"));\n";
 
 	$doc = new DOMDocument();
 
@@ -192,7 +192,7 @@ function remix_index() {
         				foreach ($nodes as $node) {
     					if ($element->nodeName=="li" && $node->nodeName=="#text"){
           						$toctext.= "PdfArrange.Base.web_topics[\"$dirname\"].";
-    						$toctext.="push(new Array(\"".$dirname."__---".$sectioncounter."\",\"---".$sectioncounter."\",\"".$node->nodeValue."\",\"0\"));\n";
+    						$toctext.="push(new Array(\"".$dirname."__---".$sectioncounter."\",\"---".$sectioncounter."\",\"".utf8_decode($node->nodeValue)."\",\"0\"));\n";
           						$toc[]= "section,".$node->nodeValue."";
     						$section=$node->nodeValue;
     						$sectioncounter++;
@@ -203,7 +203,7 @@ function remix_index() {
     					if ($element->nodeName=="href" && $node->nodeName=="#text"){
           						$toc[$section][$chapter]= $node->nodeValue."";
           						$href =$node->nodeValue;
-              					$toctext.="PdfArrange.Base.web_topics[\"$dirname\"].push(new Array(\"".$dirname."__".basename($href)."\", \"".basename($href)."\", \"$chapter\", \"1\"));\n";
+              					$toctext.="PdfArrange.Base.web_topics[\"$dirname\"].push(new Array(\"".$dirname."__".basename($href)."\", \"".basename($href)."\", \"".utf8_decode($chapter)."\", \"1\"));\n";
        					}
        				}
         }
