@@ -30,12 +30,12 @@ function blog_admin () {
 
         $html.='<script type="text/javascript" src="data/xinha/XinhaLoader.js"></script>';
 		$html.='<script type="text/javascript" src="data/xinha/XinhaConfig.js"></script>';
-		$html.='<br><br>';
+		$html.='<br /><br />';
 		$html.='<form action="admin.php?plugin=blog&action=edit" method="post">';
-		$html.='<textarea id="myTextArea" name="myTextArea" rows="25" cols="20" style="width:650px"></textarea><br>';
-		//$html.='Blog title : <input type="text" name="title"> <br>';
-		$html.=_('Posted by').' : <input type="text" name="postedBy" value="'.$_SESSION["username"].'"> <br>';
-		$html.='<br><input type="submit" name="save" value="'._('save').'"><input type="submit" name="cancel" value="'._('cancel').'"></form>';
+		$html.='<textarea id="myTextArea" name="myTextArea" rows="25" cols="20" style="width: 650px;"></textarea><br />';
+		//$html.='Blog title : <input type="text" name="title"> <br />';
+		$html.=_('Posted by').' : <input type="text" name="postedBy" value="'.$_SESSION["username"].'"> <br />';
+		$html.='<br /><input type="submit" name="save" value="'._('save').'"><input type="submit" name="cancel" value="'._('cancel').'"></form>';
 
 		return $html;
 }
@@ -82,7 +82,7 @@ function blog_index() {
           	$content=$xml->xpath('//p');
         	foreach ($content as $description) {
         		$posting.=$description."  ";
-        		//echo $description."<br><br>";;
+        		//echo $description."<br /><br />";;
         	}
         	$content=substr($posting,0,200);
         	$guidtitle=preg_replace('/[^a-z0-9]/', '', $title[0]);
@@ -98,10 +98,10 @@ function blog_index() {
         }
 		$post=preg_replace("[\/\&quot\;]","",$post);
 		//$post=preg_match("[\&quot;]","",$post);
-        	$html .= '<br>'.stripslashes($post);
-		$html.='<br>'.$info->date;
+        	$html .= '<br />'.stripslashes($post);
+		$html.='<br />'.$info->date;
         	if (trim($info->postedBy) != "") $html .= ' by '.$info->postedBy;
-		$html.='<br><br><br>';
+		$html.='<br /><br /><br />';
         if ($maxPosts-- == 0) break;
     }
 
@@ -132,7 +132,7 @@ function rss_admin() {
 	$tableRss->save();
   }
 
-    $html .= '<br><br><form action="admin.php?plugin=blog&action=rss&action2=save" method="POST">';
+    $html .= '<br /><br /><form action="admin.php?plugin=blog&action=rss&action2=save" method="post">';
 	$html .= '<table>';
     $html .=  '<tr><td>'._('webmaster').'</td><td><input type="text" name="webmaster" value="'.$tableRss->webmaster.'" size="35"/> '._('eg.  pete@email.com (Pete Mate)').'</td></tr>';
     $html .=  '<tr><td>'._('blog url').' </td><td><input type="text" name="bloglink" value="'.$tableRss->bloglink.'" size="35"/></td></tr>';
@@ -142,7 +142,7 @@ function rss_admin() {
     $html .=  '<tr><td>'._('generator').' </td><td><input type="text" name="generator" value="'.$tableRss->generator.'" size="35"/></td></tr>';
     $html .=  '<tr><td>'._('language').' </td><td><input type="text" name="language" value="'.$tableRss->language.'" size="35"/></td></tr>';
 	$html .= '</table>';
-	$html .= '<br><input type="submit" value="'._('save').'"></form>';
+	$html .= '<br /><input type="submit" value="'._('save').'"></form>';
 	$html .= _("See")." <a href=\"http://cyber.law.harvard.edu/rss/rss\" target=\"new\">http://cyber.law.harvard.edu/rss/rss</a> "._("for a good explanation of rss fields.");
 	return $html;
 }
