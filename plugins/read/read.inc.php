@@ -132,7 +132,14 @@ $section=$_GET['dir'];
   } else if ($chapter == '_all') {
     $book=strtolower($book);
     $bookdir = BOOKI_DIR."/$book/";
-    $content = '';
+    $content = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  </head>
+  <body>
+  ';
+
     foreach (glob("$bookdir/*.txt") as $chapterfile) {
       if ($chapterfile == "$bookdir/contents.txt" || $chapterfile == "$bookdir/index.txt") {
         continue;
@@ -140,6 +147,9 @@ $section=$_GET['dir'];
       $chaptercontent=@file_get_contents($chapterfile);
       $content .= $chaptercontent;
     }
+    $content .= '  </body>
+</html>';
+
     //    $content = addTemplate('book', $content);
     echo '<style type="text/css">.menu-goes-here { display: none }</style>'.$content;
   } else {
