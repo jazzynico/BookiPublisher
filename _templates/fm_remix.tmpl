@@ -3,9 +3,9 @@
   <head>
     <title>remix</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <link rel="icon" href="_templates/fm_resources/fl2.ico" type="image/x-icon" />
-    <link rel="shortcut icon" href="_templates/fm_resources/fl2.ico" type="image/x-icon" />
-    <link rel="StyleSheet" href="_templates/fm_resources/fm.css" type="text/css" media="screen"/>
+    <link type="image/x-icon" rel="icon" href="_templates/fm_resources/fl2.ico" />
+    <link type="image/x-icon" rel="shortcut icon" href="_templates/fm_resources/fl2.ico" />
+    <link type="text/css" media="screen" rel="StyleSheet" href="_templates/fm_resources/fm.css" />
     <style type="text/css">
     body {
       background: "_templates/fm_resources/background.gif";
@@ -65,18 +65,18 @@
     .topic { color: black; }
     .title { color: black; background-color: #f0f0f0}
     </style>
-    <script type="text/javascript" src="data/javascripts/Mochikit/MochiKit.js"></script>
-    <script type="text/javascript" src="data/javascripts/Mochikit/Base.js"></script>
-    <script type="text/javascript" src="data/javascripts/Mochikit/DOM.js"></script>
-    <script type="text/javascript" src="data/javascripts/Mochikit/New.js"></script>
-    <script type="text/javascript" src="data/javascripts/Mochikit/Style.js"></script>
-    <script type="text/javascript" src="data/javascripts/Mochikit/Position.js"></script>
-    <script type="text/javascript" src="data/javascripts/Mochikit/Color.js"></script>
-    <script type="text/javascript" src="data/javascripts/Mochikit/Visual.js"></script>
-    <script type="text/javascript" src="data/javascripts/Mochikit/Signal.js"></script>
-    <script type="text/javascript" src="data/javascripts/Mochikit/DragAndDrop.js"></script>
-    <script type="text/javascript" src="data/javascripts/Mochikit/Sortable.js"></script>
-    <script type="text/javascript">
+    <script type="application/javascript" src="data/javascripts/Mochikit/MochiKit.js"></script>
+    <script type="application/javascript" src="data/javascripts/Mochikit/Base.js"></script>
+    <script type="application/javascript" src="data/javascripts/Mochikit/DOM.js"></script>
+    <script type="application/javascript" src="data/javascripts/Mochikit/New.js"></script>
+    <script type="application/javascript" src="data/javascripts/Mochikit/Style.js"></script>
+    <script type="application/javascript" src="data/javascripts/Mochikit/Position.js"></script>
+    <script type="application/javascript" src="data/javascripts/Mochikit/Color.js"></script>
+    <script type="application/javascript" src="data/javascripts/Mochikit/Visual.js"></script>
+    <script type="application/javascript" src="data/javascripts/Mochikit/Signal.js"></script>
+    <script type="application/javascript" src="data/javascripts/Mochikit/DragAndDrop.js"></script>
+    <script type="application/javascript" src="data/javascripts/Mochikit/Sortable.js"></script>
+    <script type="application/javascript">
 // <![CDATA[
 var Url = {
 
@@ -467,10 +467,10 @@ function select_web(sel) {
         form.ajax.value += "<scr"+"ipt>\n";
   form.ajax.value += "var FLOSSConfig = {'style': {}, 'config': {}, 'pages': ["+s+"], 'title': '"+encodeURI(form2.pdftitle.value)+"'};\n";
         form.ajax.value += "</scri"+"pt>\n";
-        form.ajax.value += '<script type="text/javascript" src="_templates/jquery/js/jquery-1.6.1.min.js">'+"\n";
+        form.ajax.value += '<script type="application/javascript" src="_templates/jquery/js/jquery-1.6.1.min.js">'+"\n";
         form.ajax.value += "</scri"+"pt>\n";
 
-  form.ajax.value += '<script type="text/javascript" src="data/remix/embed.js">\n';
+  form.ajax.value += '<script type="application/javascript" src="data/remix/embed.js">\n';
         form.ajax.value += "</scri"+"pt>\n";
   form.ajax.value += "</div>\n";
 
