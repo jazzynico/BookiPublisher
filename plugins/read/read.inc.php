@@ -136,6 +136,7 @@ $section=$_GET['dir'];
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <style type="text/css">.menu-goes-here {display: none;}</style>
   </head>
   <body>
   ';
@@ -151,7 +152,7 @@ $section=$_GET['dir'];
 </html>';
 
     //    $content = addTemplate('book', $content);
-    echo '<style type="text/css">.menu-goes-here { display: none }</style>'.$content;
+    echo $content;
   } else {
     $book=strtolower($book);
     //echo "ch=$chapter book=$book";
